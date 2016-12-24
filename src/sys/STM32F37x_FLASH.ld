@@ -45,7 +45,6 @@ MEMORY
   FLASH (rx)      : ORIGIN = 0x08000000,             LENGTH = 256K-8K
   TUNE (r)		  : ORIGIN = 0x08000000 + 256K - 8K, LENGTH = 8K
   RAM (xrw)       : ORIGIN = 0x20000000,             LENGTH = 32K
-  MEMORY_B1 (rx)  : ORIGIN = 0x60000000,             LENGTH = 0K
 }
 
 /* Define output sections */
@@ -149,20 +148,11 @@ SECTIONS
     . = ALIGN(4);
   } >RAM
 
-  /* MEMORY_bank1 section, code must be located here explicitly            */
-  /* Example: extern int foo(void) __attribute__ ((section (".mb1text"))); */
-  .memory_b1_text :
-  {
-    *(.mb1text)        /* .mb1text sections (code) */
-    *(.mb1text*)       /* .mb1text* sections (code)  */
-    *(.mb1rodata)      /* read-only data (constants) */
-    *(.mb1rodata*)
-  } >MEMORY_B1
-
   /* Drop a placeholder for the tune's storage in flash */
   .tune :
   {
     _tuneloc = .;
+    *(.tunebin)
   } >TUNE
 
   /* Remove information from the standard libraries */
