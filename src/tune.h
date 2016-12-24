@@ -87,6 +87,10 @@ typedef struct tune_s {
 
 	// Main fuel VE table
 	tune_table2d16_t fuel;
+	// AFR targets
+	tune_table2d16_t afr_target;
+	float afr_stoich;
+
 
 	// Batt volt vs. inj. deadtime table
 	tune_table1d16_t injector_deadtime;

@@ -16,12 +16,17 @@ typedef struct status_computations_s {
 	float gamma;
 	// VE lut from table
 	float ve;
-	// Total adjust factor applied to base fuel
-	float fuel_factor;
+	// Adjustment for AFR target
+	float lambda_correction;
+
 	// AE adjust percent for TPS-based AE
 	float ae_tps;
 	// AE adjust percent for MAP-based AE
 	float ae_map;
+
+	// Total adjust factor applied to base fuel
+	float fuel_factor;
+
 	// Desired injector pulse width (without correction)
 	float fuel_qty_actual;
 	// Injector duty cycle.  0.3 = 30% duty

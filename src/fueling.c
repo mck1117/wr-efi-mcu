@@ -35,11 +35,14 @@ void Compute_Fueling()
 		float iat = lut_table1d16(&tune.iat, status.input.iat);
 		float clt = lut_table1d16(&tune.clt, status.input.clt);
 
+		// Do AFR multiplier from AFR table
+		status.computations.lambda_correction = tune.afr_stoich / lut_table2d16(&tune.afr_target, status.input.rpm, status.input.map);
+
 		status.computations.gamma = iat * clt;
 
-		status.computations.fuel_factor = status.computations.ve * status.computations.gamma * status.input.map;
+		status.computations.fuel_factor = status.computations.ve * status.computations.lambda_correction * status.computations.gamma * status.input.map;
 
-		status.computations.fuel_qty_actual = tune.engine.base_fuel * status.computations.fuel_factor;
+		status.computations.fuel_qty_actual = status.computations.fuel_factor;
 	}
 
 	// Add in AE values
