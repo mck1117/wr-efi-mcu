@@ -36,7 +36,8 @@ void Compute_Fueling()
 		float clt = lut_table1d16(&tune.clt, status.input.clt);
 
 		// Do AFR multiplier from AFR table
-		status.computations.lambda_correction = tune.afr_stoich / lut_table2d16(&tune.afr_target, status.input.rpm, status.input.map);
+		status.computations.afr_target = lut_table2d16(&tune.afr_target, status.input.rpm, status.input.map);
+		status.computations.lambda_correction = tune.afr_stoich / status.computations.afr_target;
 
 		status.computations.gamma = iat * clt;
 

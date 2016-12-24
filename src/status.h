@@ -16,6 +16,9 @@ typedef struct status_computations_s {
 	float gamma;
 	// VE lut from table
 	float ve;
+
+	// AFR target from table
+	float afr_target;
 	// Adjustment for AFR target
 	float lambda_correction;
 
