@@ -49,7 +49,7 @@ static float weighted_avg(float pct, float lhs, float rhs)
 float lut_table2d16(tune_table2d16_t* table, float x, float y)
 {
 	uint8_t x_idx = find_index(table->x_axis, x, 16);
-	uint8_t y_idx = find_index(table->x_axis, x, 16);
+	uint8_t y_idx = find_index(table->y_axis, y, 16);
 
 	// Get corresponding cells from table
 	float ll = table->values[x_idx * 16 + y_idx];
