@@ -37,6 +37,7 @@ typedef struct status_outputs_s {
 typedef struct status_flags_s {
 	uint8_t synced:1;
 	uint8_t cranking:1;
+	uint8_t running:1;
 } status_flags_t;
 
 typedef struct status_s {

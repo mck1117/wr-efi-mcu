@@ -44,18 +44,16 @@ void Events_1khz()
 	 * 	   over the period of one cylinder, but if the engine
 	 * 	   isn't spinning, this won't happen, but we still want
 	 * 	   a MAP reading.
-	 * 3) Read FPGA RPM
-	 * 4) Calculate RPM
-	 * 5) Calculate fueling
-	 * 6) Calculate ign
-	 * 7) write outputs to FPGA
+	 * 3) Calculate fueling
+	 * 4) Calculate ign
+	 * 5) write outputs to FPGA
 	 *
 	 */
 
 	FPGA_Read();
 
 	// If we aren't synced, manually update the MAP averaging
-	// (while synced this happens in an interrupt)
+	// (while synced this happens in the per-cyl interrupt)
 	if(!status.flags.synced)
 	{
 		ADC_UpdateMapAverage();

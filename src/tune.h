@@ -15,10 +15,10 @@ typedef struct tune_table1d16_s {
 	float x_axis[16];
 } tune_table1d16_t;
 
-typedef struct tune_table1d8_s {
+/*typedef struct tune_table1d8_s {
 	float values[16];
 	float x_axis[16];
-} tune_table1d8_t;
+} tune_table1d8_t;*/
 
 
 typedef tune_table1d16_t tune_sensor_conversion_t;
@@ -26,12 +26,13 @@ typedef tune_table1d16_t tune_sensor_conversion_t;
 
 typedef struct tune_sensor_config_s {
 	// Indecies for where each sensor is plugged in
-	uint8_t idx_clt, idx_iat, idx_tps, idx_afr1, idx_afr2, idx_batt;
+	// clt, iat, tps, afr1, afr2, battery (in that order)
+	uint8_t sensor_index[6];
 
-	float smoothing_factors[8];
+	float smoothing_factors[6];
 
 	tune_sensor_conversion_t sensor_map_conversion;
-	tune_sensor_conversion_t sensor_conversion[8];
+	tune_sensor_conversion_t sensor_conversion[6];
 } tune_sensor_config_t;
 
 typedef struct tune_trigger_config_s {
@@ -105,7 +106,7 @@ typedef struct tune_s {
 
 
 	// Accel enrich
-	tune_table1d8_t ae_map, ae_tps;
+	//tune_table1d8_t ae_map, ae_tps;
 
 	// Sensors configuration
 	tune_sensor_config_t sconfig;
