@@ -20,7 +20,7 @@ void Save_Tune()
 
 static uint8_t find_index(float* axis, float value, uint8_t axis_size)
 {
-	int idx = 0;
+	uint8_t idx = 0;
 
 	while((idx < (axis_size - 1)) && axis[idx] > value)
 	{
