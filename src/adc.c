@@ -129,8 +129,12 @@ void ADC_UpdateMapAverage()
 	map_sample_count = 0;
 }
 
+#include "timers.h"
+
 void ADC1_IRQHandler()
 {
+	TIM_busy();
+
 	// Accumulate injected group (MAP sensor)
 	if (ADC1->SR | ADC_SR_JEOC)
 	{
@@ -138,5 +142,7 @@ void ADC1_IRQHandler()
 		map_accumulator += ADC1->JDR1;
 		map_sample_count++;
 	}
+
+	TIM_idle();
 }
 

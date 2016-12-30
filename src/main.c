@@ -72,6 +72,24 @@ void Events_1khz()
 
 	// Write outputs to FPGA
 	FPGA_WriteRun();
+
+	if(i == 100)
+	{
+		uint32_t cnt = TIM2->CNT;
+		TIM2->CNT = 0;
+
+		uint32_t oneSecond = 6400000;
+
+		float usage = (float)cnt / oneSecond;
+
+		char buf[50];
+		sprintf(buf, "usage: %f\r\n", 1 - usage);
+		Serial_SendStr(buf);
+
+		i = 0;
+	}
+
+	i++;
 }
 
 /*
