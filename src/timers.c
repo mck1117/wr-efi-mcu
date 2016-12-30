@@ -7,38 +7,32 @@ void Init_Timers()
 {
 	// Set up timers
 
-	// Timer 4, 1khz
+	// Timer 4, 10khz
 	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
-	// Timer 4 runs at 72 mhz, so 1khz = 72000 divider (too big)
-	// so we do a /16 prescaler, then a 4500 ARR
+	// Timer 4 runs at 64 mhz, so 1khz = 6400 divider (too big)
+	// so we do a /16 prescaler, then a 400 ARR
 	TIM4->CR1 = 0;
-	TIM4->CR2 = 0;
+	TIM4->CR2 = (2 << 4);	// MMS = 010 (TRGO = update generate (makes a pulse when reset))
 	TIM4->SMCR = 0;
 	TIM4->DIER = TIM_DIER_UIE;	// Enable update interrupt
-	TIM4->CCMR1 = 0;
-	TIM4->CCMR2 = (6 << 12);	// Set ch4 to PWM mode (generate edges at tim. freq)
 	TIM4->PSC = 15;		// this is /16, since it's /(x + 1)
-	TIM4->ARR = 4499;	// period is 4500
-	TIM4->CCR4 = 1000;	// Put an edge somewhere (this value doesn't matter so long as >0 and < ARR)
+	TIM4->ARR = 399;	// period is 400
 
 
-	// Timer 19, 10khz
+	// Timer 19, 1khz
 	RCC->APB2ENR |= RCC_APB2ENR_TIM19EN;
-	// Timer 19 runs at 72 mhz, so 10khz = 7200 divider
-	// We do a /16 prescaler, then 450 ARR
+	// Timer 19 runs at 64 mhz, so 1khz = 64000 divider
+	// We do a /16 prescaler, then 4000 ARR
 	TIM19->CR1 = 0;
-	TIM19->CR2 = 0;
+	TIM19->CR2 = (2 << 4);	// MMS = 010 (TRGO = update generate (makes a pulse when reset))
 	TIM19->SMCR = 0;
-	TIM19->DIER = 0;
-	TIM19->CCMR1 = (6 << 4);	// ch1 = pmw mode 1
-	TIM19->CCMR2 = 0;
+	TIM19->DIER = TIM_DIER_UIE;
 	TIM19->PSC = 15;
-	TIM19->ARR = 449;	// period is 450
-	TIM19->CCR1 = 100;
+	TIM19->ARR = 3999;	// period is 4000
 
 
 	// Enable tim4 interrupts
-	NVIC_EnableIRQ(TIM4_IRQn);
+	NVIC_EnableIRQ(TIM19_IRQn);
 }
 
 void Start_Timers()
@@ -48,12 +42,14 @@ void Start_Timers()
 	TIM4->CR1 |= TIM_CR1_CEN;
 }
 
-void TIM4_IRQHandler()
+void TIM19_IRQHandler()
 {
-	if(TIM4->SR | TIM_SR_UIF)
+	TIM_busy();
+
+	if(TIM19->SR | TIM_SR_UIF)
 	{
 		// Clear flag
-		TIM4->SR &= ~TIM_SR_UIF;
+		TIM19->SR &= ~TIM_SR_UIF;
 
 		Events_1khz();
 	}

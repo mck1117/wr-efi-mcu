@@ -18,27 +18,34 @@ static inline void Init_ADC_GPIO()
 {
 	// Enable GPIOs
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN;
-	GPIOA->MODER &= 0x00003FFF;		// Set PA0-6 to analog in
-	GPIOB->MODER &= 0x0000000F;		// Set PB0-1 to analog in
+	GPIOA->MODER |= 0x00003FFF;		// Set PA0-6 to analog in
+	GPIOB->MODER |= 0x0000000F;		// Set PB0-1 to analog in
 }
 
 static inline void Init_ADC_ADC()
 {
 	// Power ADC
 	RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
-	// Turn on ADC
-	ADC1->CR2 |= ADC_CR2_ADON;
+
 
 	// Reset status
 	ADC1->SR = 0;
 	// Enable interrupt for injected/reg channels, enable scan mode (hit all channels in seq for one trigger)
 	ADC1->CR1 = ADC_CR1_JEOCIE | ADC_CR1_SCAN;
-	// Enable ext triggers, regular = tim4ch4, injected = tim19ch1
-	ADC1->CR2 = ADC_CR2_EXTTRIG | ADC_CR2_JEXTTRIG | (5 << 17) | (0 << 12)
-			| ADC_CR2_DMA | ADC_CR2_RSTCAL;	// Enable DMA, reset cal
+	// Enable ext triggers, regular = tim19trgo, injected = tim4trgo
+	ADC1->CR2 = ADC_CR2_EXTTRIG | ADC_CR2_JEXTTRIG | (0 << 17) | (5 << 12)
+			| ADC_CR2_DMA;	// Enable DMA, reset cal
 
+
+
+	// Turn on ADC
+	ADC1->CR2 |= ADC_CR2_ADON;
+
+	// Reset cal
+	ADC1->CR2 |= ADC_CR2_RSTCAL;
 	// Wait for cal to reset
 	while(ADC1->CR2 & ADC_CR2_RSTCAL);
+
 	// Calibrate ADC
 	ADC1->CR2 |= ADC_CR2_CAL;
 	// Wait for cal to complete
@@ -105,7 +112,7 @@ void Init_ADC()
 
 	Init_ADC_ADC();
 
-	Init_ADC_DMA();
+	//Init_ADC_DMA();
 
 	// Enable ADC interrupt
 	NVIC_EnableIRQ(ADC1_IRQn);
