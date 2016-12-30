@@ -305,10 +305,10 @@ static void SetSysClock(void)
 
   /* SYSCLK, HCLK, PCLK2 and PCLK1 configuration -----------*/
   /* Enable HSE */
-  RCC->CR |= ((uint32_t)RCC_CR_HSEON);
+  //RCC->CR |= ((uint32_t)RCC_CR_HSEON);
  
   /* Wait till HSE is ready and if Time out is reached exit */
-  do
+  /*do
   {
     HSEStatus = RCC->CR & RCC_CR_HSERDY;
     StartUpCounter++;
@@ -321,9 +321,9 @@ static void SetSysClock(void)
   else
   {
     HSEStatus = (uint32_t)0x00;
-  }
+  }*/
 
-  if (HSEStatus == (uint32_t)0x01)
+ // if (HSEStatus == (uint32_t)0x01)
   {
     /* Enable Prefetch Buffer and set Flash Latency */
     FLASH->ACR = FLASH_ACR_PRFTBE | (uint32_t)FLASH_ACR_LATENCY_1;
@@ -339,7 +339,7 @@ static void SetSysClock(void)
 
     /* PLL configuration */
     RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMULL));
-    RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_PREDIV1 | RCC_CFGR_PLLXTPRE_PREDIV1 | RCC_CFGR_PLLMULL9);
+    RCC->CFGR |= (uint32_t)(/*RCC_CFGR_PLLSRC_PREDIV1 |*/ RCC_CFGR_PLLXTPRE_PREDIV1 | RCC_CFGR_PLLMULL16);
 
     /* Enable PLL */
     RCC->CR |= RCC_CR_PLLON;
@@ -358,7 +358,7 @@ static void SetSysClock(void)
     {
     }
   }
-  else
+  //else
   { /* If HSE fails to start-up, the application will have wrong clock
          configuration. User can add here some code to deal with this error */
   }
