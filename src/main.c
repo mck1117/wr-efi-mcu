@@ -43,7 +43,9 @@ void Events_1khz()
 	 * 	   This has to happen because we normally average MAP
 	 * 	   over the period of one cylinder, but if the engine
 	 * 	   isn't spinning, this won't happen, but we still want
-	 * 	   a MAP reading.
+	 * 	   a MAP reading (but the averaging doesn't really matter,
+	 * 	   since the engine isn't running and causing it to
+	 * 	   fluctuate and need averaging).
 	 * 3) Calculate fueling
 	 * 4) Calculate ign
 	 * 5) write outputs to FPGA
