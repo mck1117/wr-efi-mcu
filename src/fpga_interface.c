@@ -7,6 +7,22 @@
 #include "tune.h"
 #include "status.h"
 
+uint8_t SPI_DR8r(SPI_TypeDef* spi)
+{
+	return *(uint8_t*)(&spi->DR);
+}
+
+void SPI_DR8w(SPI_TypeDef* spi, uint8_t val)
+{
+	*(uint8_t*)(&spi->DR) = val;
+}
+
+void SPI_wait()
+{
+	uint32_t counter = 10;
+	while(counter--);
+}
+
 void FPGA_WriteReg(uint8_t addr, uint16_t value)
 {
 	addr = (addr << 1) | 0x01;	// Address is high 7 bits, write enable is LSB
@@ -17,17 +33,25 @@ void FPGA_WriteReg(uint8_t addr, uint16_t value)
 	// Wait for not busy
 	while(SPI2->SR & SPI_SR_BSY);
 
-	SPI2->DR = addr;
-	SPI2->DR = val_high;
-	SPI2->DR = val_low;
+	GPIOA->BSRR |= GPIO_BSRR_BR_8;	// CS low
+
+	SPI_DR8w(SPI2, addr);
+	SPI_DR8w(SPI2, val_high);
+	SPI_DR8w(SPI2, val_low);
 
 	// Wait for completion
 	while(SPI2->SR & SPI_SR_BSY);
 
-	// Burn recv'd bytes
-	uint8_t v = SPI2->DR;
-	v = SPI2->DR;
-	v = SPI2->DR;
+	//SPI_wait();
+
+
+
+	// Burn recv'd bytes to clear FIFO
+	SPI_DR8r(SPI2);
+	SPI_DR8r(SPI2);
+	SPI_DR8r(SPI2);
+
+	GPIOA->BSRR |= GPIO_BSRR_BS_8;	// CS hi
 }
 
 uint16_t FPGA_ReadReg(uint8_t addr)
@@ -37,20 +61,23 @@ uint16_t FPGA_ReadReg(uint8_t addr)
 	// Wait for not busy
 	while(SPI2->SR & SPI_SR_BSY);
 
+	GPIOA->BSRR |= GPIO_BSRR_BR_8;	// CS low
 
-	SPI2->DR = addr;
-	SPI2->DR = 0;		// Two dummy bytes to read back data
-	SPI2->DR = 0;
+	SPI_DR8w(SPI2, addr);
+	SPI_DR8w(SPI2, 0xBE);	// Two dummy bytes to read back data
+	SPI_DR8w(SPI2, 0xEF);
 
 	// Wait for completion
 	while(SPI2->SR & SPI_SR_BSY);
 
 	// Burn a byte
-	uint8_t v = SPI2->DR;
+	uint8_t v = SPI_DR8r(SPI2);
 
 	// Read high/low bytes
-	uint8_t high = SPI2->DR;
-	uint8_t low = SPI2->DR;
+	uint8_t high = SPI_DR8r(SPI2);
+	uint8_t low = SPI_DR8r(SPI2);
+
+	GPIOA->BSRR |= GPIO_BSRR_BS_8;	// CS hi
 
 	// Return combined 16 bit value
 	return high << 8 | low;
@@ -62,13 +89,22 @@ void Init_FPGA_SPI()
 	// Set up SPI2 to talk to the FPGA
 	RCC->APB1ENR |= RCC_APB1ENR_SPI2EN;
 
-	SPI2->CR1 = SPI_CR1_SPE | (7 << 3) | SPI_CR1_MSTR;	// Enable, master, clock /256
+	SPI2->CR1 = (1 << 3) | SPI_CR1_MSTR | SPI_CR1_CPOL;	// Master, clock /4
+	SPI2->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI;	// ignore stupid nss pin
 	SPI2->CR2 = (7 << 8);	// 8 bit data size
+
+	SPI2->CR1 |= SPI_CR1_SPE;
 }
 
 void Init_FPGA_GPIO()
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIODEN;
+	RCC->AHBENR |= RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIODEN | RCC_AHBENR_GPIOAEN;
+
+	// Set GPIO A regular output
+	GPIOA->BSRR |= GPIO_BSRR_BS_8;	// CS line idles hi
+	GPIOA->MODER &= ~(GPIO_MODER_MODER8);
+	GPIOA->MODER |= GPIO_MODER_MODER8_0;
+
 
 	// Set GPIO B af
 	GPIOB->MODER &= ~(GPIO_MODER_MODER14 | GPIO_MODER_MODER15);
