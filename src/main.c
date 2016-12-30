@@ -73,6 +73,8 @@ void Events_1khz()
 	// Write outputs to FPGA
 	FPGA_WriteRun();
 
+	static int i = 0;
+
 	if(i == 100)
 	{
 		uint32_t cnt = TIM2->CNT;
