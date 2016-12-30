@@ -50,7 +50,7 @@ void Sensors_Update()
 
 
 	// Cranking it the engine is turning, but slowly
-	status.flags.cranking = status.input.rpm > 0.1 &&
+	status.flags.cranking = status.input.rpm > 0.1f &&
 							status.input.rpm < tune.engine.cranking_threshold;
 
 	status.flags.running = status.input.rpm >= tune.engine.cranking_threshold;
