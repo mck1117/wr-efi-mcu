@@ -28,7 +28,7 @@ static void Init_Serial_USART()
 				  USART_CR1_RE;						// Enable rx
 	USART3->CR2 = 0;
 	USART3->CR3 = USART_CR3_DMAT;	// Enable DMA for transmit
-	USART3->BRR = 36;			// 2 mbit/s
+	USART3->BRR = 128;			// 250k baud
 	USART3->ICR = 0xFFFFFFFF;	// Clear all interrupts
 }
 
@@ -41,7 +41,7 @@ static void Init_Serial_DMA()
 
 	// Just set peripheral addr for now, the rest changes later
 	DMA1_Channel2->CCR = 0;
-	DMA1_Channel2->CPAR = &USART3->TDR;
+	DMA1_Channel2->CPAR = (uint32_t)&USART3->TDR;
 }
 
 
