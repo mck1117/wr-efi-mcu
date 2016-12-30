@@ -12,6 +12,8 @@
 #include "fueling.h"
 #include "ignition.h"
 
+#include <stdio.h>
+
 int main(void)
 {
 	Init_Serial();
