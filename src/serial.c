@@ -12,7 +12,7 @@ static void Init_Serial_GPIO()
 	// Clear existing mode(s)
 	GPIOB->MODER &= ~(GPIO_MODER_MODER8 | GPIO_MODER_MODER9);
 	// Mode = alt func
-	GPIOB->MODER &= GPIO_MODER_MODER8_1 | GPIO_MODER_MODER9_1;
+	GPIOB->MODER |= GPIO_MODER_MODER8_1 | GPIO_MODER_MODER9_1;
 
 	// Clear existing alt funcs
 	GPIOB->AFR[1] &= ~(GPIO_AFRH_AFRH0 | GPIO_AFRH_AFRH1);
@@ -22,6 +22,8 @@ static void Init_Serial_GPIO()
 
 static void Init_Serial_USART()
 {
+	RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
+
 	USART3->CR1 = USART_CR1_RXNEIE | USART_CR1_TE |	// Enable tx, enable rx interrupt
 				  USART_CR1_RE;						// Enable rx
 	USART3->CR2 = 0;
@@ -39,7 +41,7 @@ static void Init_Serial_DMA()
 
 	// Just set peripheral addr for now, the rest changes later
 	DMA1_Channel2->CCR = 0;
-	DMA1_Channel2->CPAR = USART3->TDR;
+	DMA1_Channel2->CPAR = &USART3->TDR;
 }
 
 
@@ -65,11 +67,14 @@ void Serial_Send(const uint8_t* data, uint16_t length)
 {
 	memcpy(send_buffer, data, length);
 
+	DMA1->IFCR |= DMA_IFCR_CGIF2 | DMA_IFCR_CTCIF2 | DMA_IFCR_CHTIF2;
+
 	DMA1_Channel2->CCR = DMA_CCR_MINC | DMA_CCR_DIR;
 	DMA1_Channel2->CMAR = (uint32_t)send_buffer;
 	DMA1_Channel2->CNDTR = length;
 
-
+	// Start the transfer
+	DMA1_Channel2->CCR |= DMA_CCR_EN;
 }
 
 void Serial_SendStr(const char* str)
