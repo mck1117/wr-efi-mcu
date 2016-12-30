@@ -4,11 +4,16 @@
 
 #include "status.h"
 
-static float convert_sensor(uint16_t adc, tune_sensor_conversion_t* converter)
+static float convert_sensor_voltage(uint16_t adc)
 {
 	// Full scale 5v input is 0.7575 * 4096 = 3012.2727
 	// conversion factor = 5 / 3012.2727
-	float voltage = adc * 0.00161172161172f;
+	return adc * 0.00161172161172f;
+}
+
+static float convert_sensor(uint16_t adc, tune_sensor_conversion_t* converter)
+{
+	float voltage = convert_sensor_voltage(adc);
 
 	return lut_table1d16(converter, voltage);
 }
