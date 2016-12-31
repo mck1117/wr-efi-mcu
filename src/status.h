@@ -48,6 +48,10 @@ typedef struct status_flags_s {
 	uint8_t running:1;
 } status_flags_t;
 
+typedef struct status_system_s {
+	uint8_t cpu_usage;
+} status_system_t;
+
 typedef struct status_s {
 	status_inputs_t input;
 	status_outputs_t output;
@@ -55,8 +59,17 @@ typedef struct status_s {
 	status_computations_t computations;
 
 	status_flags_t flags;
+
+	status_system_t system;
 } status_t;
 
 status_t status;
+
+void Init_CPUUsage();
+
+void CPU_idle();
+void CPU_busy();
+
+void CPU_Usage_Update();
 
 #endif

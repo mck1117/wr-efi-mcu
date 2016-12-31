@@ -6,7 +6,7 @@ void Start_Timers();
 
 void Events_1khz();
 
-void TIM_idle();
-void TIM_busy();
+void CPU_idle();
+void CPU_busy();
 
 #endif

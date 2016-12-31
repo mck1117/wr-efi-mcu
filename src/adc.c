@@ -133,7 +133,7 @@ void ADC_UpdateMapAverage()
 
 void ADC1_IRQHandler()
 {
-	TIM_busy();
+	CPU_busy();
 
 	// Accumulate injected group (MAP sensor)
 	if (ADC1->SR | ADC_SR_JEOC)
@@ -143,6 +143,6 @@ void ADC1_IRQHandler()
 		map_sample_count++;
 	}
 
-	TIM_idle();
+	CPU_idle();
 }
 

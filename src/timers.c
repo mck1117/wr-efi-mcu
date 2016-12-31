@@ -30,16 +30,6 @@ void Init_Timers()
 	TIM19->PSC = 15;
 	TIM19->ARR = 3999;	// period is 4000
 
-	// Timer 2, 64 mhz, CPU usage timer
-	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
-	TIM2->CR1 = 0;
-	TIM2->CR2 = 0;
-	TIM2->SMCR = 0;
-	TIM2->DIER = 0;
-	TIM2->PSC = 0;
-	TIM2->ARR = 0xFFFFFFFF;
-
-
 	// Enable tim4 interrupts
 	NVIC_EnableIRQ(TIM19_IRQn);
 }
@@ -50,12 +40,14 @@ void Start_Timers()
 	TIM19->CR1 |= TIM_CR1_CEN;
 	TIM4->CR1 |= TIM_CR1_CEN;
 
-	TIM_idle();
+	CPU_idle();
 }
 
 void TIM19_IRQHandler()
 {
-	TIM_busy();
+	CPU_busy();
+
+	CPU_Usage_Update();
 
 	if(TIM19->SR | TIM_SR_UIF)
 	{
@@ -65,15 +57,5 @@ void TIM19_IRQHandler()
 		Events_1khz();
 	}
 
-	TIM_idle();
-}
-
-void TIM_idle()
-{
-	TIM2->CR1 |= TIM_CR1_CEN;
-}
-
-void TIM_busy()
-{
-	TIM2->CR1 &= ~TIM_CR1_CEN;
+	CPU_idle();
 }
