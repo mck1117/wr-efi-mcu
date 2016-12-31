@@ -34,7 +34,7 @@ static inline void Init_ADC_ADC()
 	ADC1->CR1 = ADC_CR1_JEOCIE | ADC_CR1_SCAN;
 	// Enable ext triggers, regular = tim19trgo, injected = tim4trgo
 	ADC1->CR2 = ADC_CR2_EXTTRIG | ADC_CR2_JEXTTRIG | (0 << 17) | (5 << 12)
-			| ADC_CR2_DMA;	// Enable DMA, reset cal
+			| ADC_CR2_DMA;	// Enable DMA
 
 
 
@@ -82,7 +82,7 @@ static inline void Init_ADC_DMA()
 	// 8 transfers
 	DMA1_Channel1->CNDTR = 8;
 	// DMA src = ADC 1 data reg
-	DMA1_Channel1->CPAR = ADC1->DR;
+	DMA1_Channel1->CPAR = &ADC1->DR;
 	// Write to the sample array
 	DMA1_Channel1->CMAR = (uint32_t)regular_channels_sample;
 
@@ -112,7 +112,7 @@ void Init_ADC()
 
 	Init_ADC_ADC();
 
-	//Init_ADC_DMA();
+	Init_ADC_DMA();
 
 	// Enable ADC interrupt
 	NVIC_EnableIRQ(ADC1_IRQn);
