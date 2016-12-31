@@ -53,15 +53,21 @@ void Sensors_Update()
 	// Convert MAP sensor (no smoothing, this is done by the event sampling)
 	status.input.map = convert_sensor(map_average, &tune.sconfig.sensor_map_conversion);
 
-
 	// Cranking it the engine is turning, but slowly
 	status.flags.cranking = status.input.rpm > 0.1f &&
 							status.input.rpm < tune.engine.cranking_threshold;
 
 	status.flags.running = status.input.rpm >= tune.engine.cranking_threshold;
 
-	// 60 seconds / RPM = seconds
-	status.computations.period = 60 / status.input.rpm;
+	if(status.input.rpm < 0.001f)
+	{
+		status.computations.period = 0;
+	}
+	else
+	{
+		// 60 seconds / RPM = seconds
+		status.computations.period = 60 / status.input.rpm;
+	}
 }
 
 
