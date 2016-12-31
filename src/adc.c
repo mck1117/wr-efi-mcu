@@ -58,7 +58,7 @@ static inline void Init_ADC_ADC()
 			| (3 << 12) | (3 << 9) | (3 << 6) | (3 << 3) | (3 << 0);
 
 	// Set up regular sequence
-	ADC1->SQR1 = (8 << 20);				// 8 channels in reg. seq.
+	ADC1->SQR1 = (7 << 20);				// 8 channels in reg. seq.
 	ADC1->SQR2 = (9 << 5) | (8 << 0);	// 8th: ch9, 7th: ch8
 	ADC1->SQR3 = (6 << 25) | (5 << 20) | (4 << 15) | (3 << 10) | (2 << 5)
 			| (1 << 0); 	// Ch 6, 5, 4, 3, 2, 1
