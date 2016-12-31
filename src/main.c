@@ -23,7 +23,7 @@ int main(void)
 	Init_FPGA();
 
 	// Load tune in to RAM from FLASH
-	Load_Tune();
+	//Load_Tune();
 
 	// Fire this last
 	Start_Timers();
