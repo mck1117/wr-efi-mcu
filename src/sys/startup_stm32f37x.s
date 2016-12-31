@@ -54,6 +54,8 @@ defined in linker script */
 /* end address for the .bss section. defined in linker script */
 .word	_ebss
 
+.equ __stacktop, 0x20008000
+
 .equ  BootRAM,        0xF1E0F85F
 /**
  * @brief  This is the code that gets called when the processor first
@@ -68,6 +70,10 @@ defined in linker script */
 	.weak	Reset_Handler
 	.type	Reset_Handler, %function
 Reset_Handler:
+	// Fix the stack pointer for debugging, I'm not sure why this is broken
+	ldr r0, =__stacktop
+	mov sp, r0
+
 
 /* Copy the data segment initializers from flash to SRAM */
   movs	r1, #0
