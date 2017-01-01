@@ -14,6 +14,9 @@
 
 //#include <stdio.h>
 
+volatile uint32_t system_timer = 0;
+volatile init_completed = 0;
+
 int main(void)
 {
 	Init_CPUUsage();
@@ -21,13 +24,18 @@ int main(void)
 	Init_Timers();
 	Init_ADC();
 
+	Start_Timers();
+
+	// Wait for FPGA to program
+	while(system_timer < 1000) ;
+
+	// Now we can init the FPGA
 	Init_FPGA();
 
 	// Load tune in to RAM from FLASH
 	//Load_Tune();
 
-	// Fire this last
-	Start_Timers();
+	init_completed = 1;
 
 	// loop da loop
 	while(1);
@@ -56,25 +64,33 @@ void Events_1khz()
 	 */
 
 	FPGA_Read();
+	system_timer++;
 
-	// If we aren't synced, manually update the MAP averaging
-	// (while synced this happens in the per-cyl interrupt)
-	if(!status.flags.synced)
+	if(init_completed)
 	{
-		ADC_UpdateMapAverage();
+		FPGA_Read();
+
+		status.flags.synced = 0;
+
+		// If we aren't synced, manually update the MAP averaging
+		// (while synced this happens in the per-cyl interrupt)
+		if(!status.flags.synced)
+		{
+			ADC_UpdateMapAverage();
+		}
+
+		// Update sensor smoothing and mappings
+		Sensors_Update();
+
+		// Compute fuel pulse width
+		Compute_Fueling();
+
+		// Compute ignition timing
+		Compute_Ignition();
+
+		// Write outputs to FPGA
+		FPGA_WriteRun();
 	}
-
-	// Update sensor smoothing and mappings
-	Sensors_Update();
-
-	// Compute fuel pulse width
-	Compute_Fueling();
-
-	// Compute ignition timing
-	Compute_Ignition();
-
-	// Write outputs to FPGA
-	FPGA_WriteRun();
 }
 
 /*
