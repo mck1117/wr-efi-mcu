@@ -12,7 +12,8 @@ void Compute_Ignition()
 	else	// Switch over to real values for run
 	{
 		// Get timing from table
-		status.output.ign_timing = lut_table2d16(&tune.ign, status.input.rpm, status.input.map);
+		uint16_t timing = lut_table2d16_int16(&tune.ign, status.input.rpm, status.input.map);
+		status.output.ign_timing = (float)timing / 10;
 		// Get dwell from table
 		status.output.ign_dwell = lut_table1d16(&tune.dwell, status.input.batt);
 	}

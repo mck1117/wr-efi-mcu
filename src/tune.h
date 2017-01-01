@@ -4,15 +4,21 @@
 
 #include <stdint.h>
 
-typedef struct tune_table2d16_s {
-	float values[16*16];
-	float x_axis[16];
-	float y_axis[16];
-} tune_table2d16_t;
+typedef struct tune_table2d16_uint8_s {
+	uint8_t values[16*16];
+	int16_t x_axis[16];
+	int16_t y_axis[16];
+} tune_table2d16_uint8_t;
+
+typedef struct tune_table2d16_int16_s {
+	uint8_t values[16*16];
+	int16_t x_axis[16];
+	int16_t y_axis[16];
+} tune_table2d16_int16_t;
 
 typedef struct tune_table1d16_s {
 	float values[16];
-	float x_axis[16];
+	int16_t x_axis[16];
 } tune_table1d16_t;
 
 /*typedef struct tune_table1d8_s {
@@ -72,6 +78,9 @@ typedef struct tune_engine_s {
 } tune_engine_t;
 
 typedef struct tune_s {
+	// Version goes at the beginning, never moves
+	// so that ((uint32_t)tune) always gives the ver
+	uint32_t version;
 
 	// Cranking correction table
 	tune_table1d16_t cranking;
@@ -86,9 +95,9 @@ typedef struct tune_s {
 
 
 	// Main fuel VE table
-	tune_table2d16_t fuel;
+	tune_table2d16_uint8_t fuel;
 	// AFR targets
-	tune_table2d16_t afr_target;
+	tune_table2d16_int16_t afr_target;
 	float afr_stoich;
 
 
@@ -100,8 +109,9 @@ typedef struct tune_s {
 
 
 
-	// Main ignition timing table
-	tune_table2d16_t ign;
+	// Main ignition timing table in tenths of a degree
+	// table value of 156 = 15.6 BTDC
+	tune_table2d16_int16_t ign;
 	// Main dwell table
 	tune_table1d16_t dwell;
 
@@ -123,7 +133,8 @@ tune_t tune;
 void Load_Tune();
 void Save_Tune();
 
-float lut_table2d16(tune_table2d16_t* table, float x, float y);
+float lut_table2d16_int16(tune_table2d16_int16_t* table, float x, float y);
+float lut_table2d16_uint8(tune_table2d16_uint8_t* table, float x, float y);
 float lut_table1d16(tune_table1d16_t* table, float x);
 
 #endif

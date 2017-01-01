@@ -31,12 +31,12 @@ void Compute_Fueling()
 	else
 	{
 		// Otherwise do normal fuel calc
-		status.computations.ve = lut_table2d16(&tune.fuel, status.input.rpm, status.input.map);
+		status.computations.ve = lut_table2d16_uint8(&tune.fuel, status.input.rpm, status.input.map);
 		float iat = lut_table1d16(&tune.iat, status.input.iat);
 		float clt = lut_table1d16(&tune.clt, status.input.clt);
 
 		// Do AFR multiplier from AFR table
-		status.computations.afr_target = lut_table2d16(&tune.afr_target, status.input.rpm, status.input.map);
+		status.computations.afr_target = lut_table2d16_int16(&tune.afr_target, status.input.rpm, status.input.map) / 10;
 		status.computations.lambda_correction = tune.afr_stoich / status.computations.afr_target;
 
 		status.computations.gamma = iat * clt;
