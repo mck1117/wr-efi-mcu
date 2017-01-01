@@ -35,10 +35,20 @@ static float pct_along(float* axis, float value, uint8_t idx_low)
 	float val_low = axis[idx_low];
 	float val_hi = axis[idx_low + 1];
 
+	if(value < val_low) return 0.0f;
+	if(value > val_hi) return 1.0f;
+
 	float width = val_hi - val_low;
 	float pos = value - val_low;
 
-	return pos / width;
+	if(width < 0.001f)
+	{
+		return 0;
+	}
+	else
+	{
+		return pos / width;
+	}
 }
 
 static float weighted_avg(float pct, float lhs, float rhs)
