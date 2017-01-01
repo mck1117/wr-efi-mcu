@@ -40,12 +40,14 @@ void Start_Timers()
 	TIM19->CR1 |= TIM_CR1_CEN;
 	TIM4->CR1 |= TIM_CR1_CEN;
 
-	CPU_idle();
+	CPU_idle_int();
 }
+
+#include "status.h"
 
 void TIM19_IRQHandler()
 {
-	CPU_busy();
+	CPU_busy_int();
 
 	CPU_Usage_Update();
 
@@ -57,5 +59,5 @@ void TIM19_IRQHandler()
 		Events_1khz();
 	}
 
-	CPU_idle();
+	CPU_idle_int();
 }

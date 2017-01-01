@@ -22,15 +22,52 @@ void Init_CPUUsage()
 	TIM2->PSC = 0;
 	TIM2->ARR = 0xFFFFFFFF;
 
-	CPU_idle();
+	CPU_idle_int();
 }
 
-void CPU_idle()
+volatile uint8_t busy_main = 0;
+
+void CPU_idle_main()
 {
+	// Disable interrupts
+	__disable_irq();
+	__DSB();
+	__ISB();	// empty the pipe in case there's an interrupt already on the way
+
 	TIM2->CR1 |= TIM_CR1_CEN;
+	busy_main = 0;
+
+	__DSB();
+
+	__enable_irq();
 }
 
-void CPU_busy()
+void CPU_busy_main()
+{
+	// Disable interrupts
+	__disable_irq();
+	__DSB();
+	__ISB();	// empty the pipe in case there's an interrupt already on the way
+
+	busy_main = 1;
+	TIM2->CR1 &= ~TIM_CR1_CEN;
+
+	__DSB();
+
+	// Reenable interrupts
+	__enable_irq();
+}
+
+void CPU_idle_int()
+{
+	// If the main thread is busy, don't restart the counter
+	if(!busy_main)
+	{
+		TIM2->CR1 |= TIM_CR1_CEN;
+	}
+}
+
+void CPU_busy_int()
 {
 	TIM2->CR1 &= ~TIM_CR1_CEN;
 }
@@ -56,8 +93,8 @@ void CPU_Usage_Update()
 		status.system.cpu_usage = usage;
 
 		char buf[50];
-		sprintf(buf, "%u %u\r\n", cnt, usage);
-		Serial_SendStr(buf);
+		//sprintf(buf, "%u %u\r\n", cnt, usage);
+		//Serial_SendStr(buf);
 
 		i = 0;
 	}

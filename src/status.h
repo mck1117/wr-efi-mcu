@@ -67,8 +67,11 @@ status_t status;
 
 void Init_CPUUsage();
 
-void CPU_idle();
-void CPU_busy();
+void CPU_idle_int();
+void CPU_busy_int();
+
+void CPU_idle_main();
+void CPU_busy_main();
 
 void CPU_Usage_Update();
 
