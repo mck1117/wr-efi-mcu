@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "adc.h"
+#include "can.h"
 #include "fpga.h"
 #include "sensors.h"
 #include "serial.h"
@@ -23,6 +24,8 @@ int main(void)
 	Init_Serial();
 	Init_Timers();
 	Init_ADC();
+
+	Init_CAN();
 
 	Start_Timers();
 
@@ -63,8 +66,11 @@ void Events_1khz()
 	 *
 	 */
 
-	FPGA_Read();
 	system_timer++;
+
+	can_frame_t frame;
+
+	CAN_Transmits();
 
 	if(init_completed)
 	{
