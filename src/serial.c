@@ -32,7 +32,7 @@ static void Init_Serial_USART()
 	USART3->ICR = 0xFFFFFFFF;	// Clear all interrupts
 }
 
-static uint8_t send_buffer[1024];
+static uint8_t send_buffer[128];
 
 static void Init_Serial_DMA()
 {
