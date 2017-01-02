@@ -17,7 +17,7 @@ typedef struct tune_table2d16_int16_s {
 } tune_table2d16_int16_t;
 
 typedef struct tune_table1d16_s {
-	float values[16];
+	uint16_t values[16];
 	int16_t x_axis[16];
 } tune_table1d16_t;
 

@@ -31,12 +31,12 @@ void Compute_Fueling()
 	else
 	{
 		// Otherwise do normal fuel calc
-		status.computations.ve = lut_table2d16_uint8(&tune.fuel, status.input.rpm, status.input.map);
-		float iat = lut_table1d16(&tune.iat, status.input.iat);
-		float clt = lut_table1d16(&tune.clt, status.input.clt);
+		status.computations.ve = lut_table2d16_uint8(&tune.fuel, status.input.rpm, status.input.map) / 100;
+		float iat = lut_table1d16(&tune.iat, status.input.iat) / 100;
+		float clt = lut_table1d16(&tune.clt, status.input.clt) / 100;
 
 		// Do AFR multiplier from AFR table
-		float afr_target_x10 = lut_table2d16_uint8(&tune.afr_target, status.input.rpm, status.input.map) / 10;
+		float afr_target_x10 = lut_table2d16_uint8(&tune.afr_target, status.input.rpm, status.input.map);
 		status.computations.afr_target = afr_target_x10 / 10;
 		// We divide by the 10x afr target because stoich is also 10x
 		status.computations.lambda_correction = tune.afr_stoich / afr_target_x10;
@@ -51,10 +51,11 @@ void Compute_Fueling()
 	// Add in AE values
 	status.computations.fuel_qty_actual += (status.computations.ae_map + status.computations.ae_tps);
 	// Multiply by base fuel (it's a ratio to base fuel right now)
-	status.computations.fuel_qty_actual *= tune.engine.base_fuel;
+	float fuel_qty_us = status.computations.fuel_qty_actual * tune.engine.base_fuel;
+	status.computations.fuel_qty_actual = fuel_qty_us / 1000000;
 
-	// Correct injector deadtime
-	status.output.injector_pw = status.computations.fuel_qty_actual + lut_table1d16(&tune.injector_deadtime, status.input.batt);
+	// Correct injector deadtime (convert to seconds in the process)
+	status.output.injector_pw = (fuel_qty_us + lut_table1d16(&tune.injector_deadtime, status.input.batt)) / 1000000;
 
 	// Only compute duty cycle if we're synced, as duty is meaningless if engine isn't spinning
 	if(status.flags.synced)
