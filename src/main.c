@@ -16,7 +16,7 @@
 //#include <stdio.h>
 
 volatile uint32_t system_timer = 0;
-volatile init_completed = 0;
+volatile int init_completed = 0;
 
 int main(void)
 {
@@ -67,8 +67,6 @@ void Events_1khz()
 	 */
 
 	system_timer++;
-
-	can_frame_t frame;
 
 	CAN_Transmits();
 

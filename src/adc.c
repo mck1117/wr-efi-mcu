@@ -82,7 +82,7 @@ static inline void Init_ADC_DMA()
 	// 8 transfers
 	DMA1_Channel1->CNDTR = 8;
 	// DMA src = ADC 1 data reg
-	DMA1_Channel1->CPAR = &ADC1->DR;
+	DMA1_Channel1->CPAR = (uint32_t)(&ADC1->DR);
 	// Write to the sample array
 	DMA1_Channel1->CMAR = (uint32_t)regular_channels_sample;
 
@@ -129,7 +129,7 @@ void ADC_UpdateMapAverage()
 	map_sample_count = 0;
 }
 
-#include "timers.h"
+#include "status.h"
 
 void ADC1_IRQHandler()
 {

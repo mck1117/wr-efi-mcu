@@ -71,7 +71,7 @@ uint16_t FPGA_ReadReg(uint8_t addr)
 	while(SPI2->SR & SPI_SR_BSY);
 
 	// Burn a byte
-	uint8_t v = SPI_DR8r(SPI2);
+	SPI_DR8r(SPI2);
 
 	// Read high/low bytes
 	uint8_t high = SPI_DR8r(SPI2);
