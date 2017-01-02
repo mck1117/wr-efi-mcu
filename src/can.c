@@ -110,6 +110,7 @@ void Init_CAN()
 
 
 
+	CAN1->FMR |= CAN_FMR_FINIT;
 	CAN1->sFilterRegister[0].FR1 = 0;
 	CAN1->sFilterRegister[0].FR2 = 0;
 	CAN1->FA1R = 1;
@@ -117,8 +118,39 @@ void Init_CAN()
 
 	CAN1->IER |= CAN_IER_FMPIE0;
 
+	NVIC_EnableIRQ(CAN1_RX0_IRQn);
 }
 
+
+#include "stdlib.h"
+
+void CAN1_RX0_IRQHandler()
+{
+	CPU_busy_int();
+
+	if(CAN1->RF0R & CAN_RF0R_FMP0)
+	{
+		can_frame_t f;
+
+		f.data32[1] = CAN1->sFIFOMailBox[0].RDHR;
+		f.data32[0] = CAN1->sFIFOMailBox[0].RDLR;
+		f.id = CAN1->sFIFOMailBox[0].RIR >> 21;
+
+		CAN_RecieveFrame(f);
+
+		// Release message
+		CAN1->RF0R |= CAN_RF0R_RFOM0;
+	}
+
+	CPU_idle_int();
+}
+
+// Recieves one can frame, either from real CAN, or CAN-over-USART
+void CAN_RecieveFrame(can_frame_t frame)
+{
+	// Echo frame over serial
+	//Serial_SendCAN(frame);
+}
 
 
 static can_frame_t fifo[CAN_FIFO_LENGTH];

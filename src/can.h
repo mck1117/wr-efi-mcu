@@ -31,4 +31,6 @@ typedef void (*CanFrameGenerator_t)(can_frame_t*);
 void Init_CAN();
 void CAN_Transmits();
 
+void CAN_RecieveFrame(can_frame_t frame);
+
 #endif
