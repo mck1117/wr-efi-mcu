@@ -36,8 +36,10 @@ void Compute_Fueling()
 		float clt = lut_table1d16(&tune.clt, status.input.clt);
 
 		// Do AFR multiplier from AFR table
-		status.computations.afr_target = lut_table2d16_int16(&tune.afr_target, status.input.rpm, status.input.map) / 10;
-		status.computations.lambda_correction = tune.afr_stoich / status.computations.afr_target;
+		float afr_target_x10 = lut_table2d16_uint8(&tune.afr_target, status.input.rpm, status.input.map) / 10;
+		status.computations.afr_target = afr_target_x10 / 10;
+		// We divide by the 10x afr target because stoich is also 10x
+		status.computations.lambda_correction = tune.afr_stoich / afr_target_x10;
 
 		status.computations.gamma = iat * clt;
 
