@@ -6,8 +6,8 @@ void Compute_Ignition()
 	// Used fixed values for start
 	if(status.flags.cranking)
 	{
-		status.output.ign_timing = tune.cranking_advance;
-		status.output.ign_dwell = tune.cranking_dwell;
+		status.output.ign_timing = (float)tune.cranking_advance / 10;
+		status.output.ign_dwell = (float)tune.cranking_dwell / 1000000;
 	}
 	else	// Switch over to real values for run
 	{

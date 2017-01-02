@@ -42,10 +42,10 @@ typedef struct tune_sensor_config_s {
 } tune_sensor_config_t;
 
 typedef struct tune_engine_s {
-	// Fuel pulse for no corrections, 100% VE
-	float base_fuel;
-	// Speed above which we switch from crank -> run
-	float cranking_threshold;
+	// Fuel pulse for no corrections, 100% VE, in microseconds (8 ms = 8000 value)
+	uint16_t base_fuel;
+	// RPM above which we switch from crank -> run
+	uint16_t cranking_threshold;
 
 
 
@@ -81,10 +81,10 @@ typedef struct tune_s {
 	// Cranking correction table
 	tune_table1d16_t cranking;
 
-	// Cranking ign timing
-	float cranking_advance;
-	// Cranking dwell
-	float cranking_dwell;
+	// Cranking ign timing, 10ths of a deg BTDC (13.5 deg btdc = 135 value)
+	int16_t cranking_advance;
+	// Cranking dwell, microseconds
+	uint16_t cranking_dwell;
 
 
 
