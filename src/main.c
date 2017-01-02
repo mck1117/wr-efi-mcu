@@ -20,6 +20,8 @@ volatile int init_completed = 0;
 
 int main(void)
 {
+	Load_Tune();
+
 	Init_CPUUsage();
 	Init_Serial();
 	Init_Timers();
