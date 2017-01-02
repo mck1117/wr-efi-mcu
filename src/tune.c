@@ -50,6 +50,8 @@ void Load_Tune()
 		tune.clt.values[i] = 127;
 		tune.iat.values[i] = 97;
 	}
+
+	tune.sconfig.battery_voltage_ratio = 11.0656f;
 }
 
 void Save_Tune()

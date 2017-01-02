@@ -39,6 +39,8 @@ typedef struct tune_sensor_config_s {
 
 	tune_sensor_conversion_t sensor_map_conversion;
 	tune_sensor_conversion_t sensor_conversion[6];
+
+	float battery_voltage_ratio;
 } tune_sensor_config_t;
 
 typedef struct tune_engine_s {

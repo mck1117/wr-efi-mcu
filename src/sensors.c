@@ -30,6 +30,12 @@ static void smooth_sensor(float* sensor, float new_value, float alpha)
 	*sensor = result;
 }
 
+static float convert_battery_voltage(uint16_t adc)
+{
+	float senseVolts = ADC_CountsToVolts(adc);
+
+	return senseVolts * tune.sconfig.battery_voltage_ratio;
+}
 
 void Sensors_Update()
 {
@@ -43,12 +49,16 @@ void Sensors_Update()
 		unsmoothed[i] = convert_sensor(raw_adc, &tune.sconfig.sensor_conversion[i]);
 	}
 
+
+
 	smooth_sensor(&status.input.clt, unsmoothed[0], tune.sconfig.smoothing_factors[0]);
 	smooth_sensor(&status.input.iat, unsmoothed[1], tune.sconfig.smoothing_factors[1]);
 	smooth_sensor(&status.input.tps, unsmoothed[2], tune.sconfig.smoothing_factors[2]);
 	smooth_sensor(&status.input.afr1, unsmoothed[3], tune.sconfig.smoothing_factors[3]);
 	smooth_sensor(&status.input.afr2, unsmoothed[4], tune.sconfig.smoothing_factors[4]);
-	smooth_sensor(&status.input.batt, unsmoothed[5], tune.sconfig.smoothing_factors[5]);
+	//smooth_sensor(&status.input.batt, unsmoothed[5], tune.sconfig.smoothing_factors[5]);
+
+	status.input.batt = convert_battery_voltage(regular_channels_sample[7]);
 
 	// Convert MAP sensor (no smoothing, this is done by the event sampling)
 	status.input.map = convert_sensor(map_average, &tune.sconfig.sensor_map_conversion);

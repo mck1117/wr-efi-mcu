@@ -136,7 +136,7 @@ void ADC_UpdateMapAverage()
 static float v30 = 0;
 static float dTempdv = 0;
 
-static float adc_count_to_volts(uint16_t counts)
+float ADC_CountsToVolts(uint16_t counts)
 {
 	return counts / 1240.909f; // = counts * 3.3 / 4095
 }
@@ -148,8 +148,8 @@ void Init_ADC_TempSensor()
 	uint16_t val_30 = *((uint16_t*)0x1FFFF7B8);
 	uint16_t val_110 = *((uint16_t*)0x1FFFF7C2);
 
-	v30 = adc_count_to_volts(val_30);
-	float v110 = adc_count_to_volts(val_110);
+	v30 = ADC_CountsToVolts(val_30);
+	float v110 = ADC_CountsToVolts(val_110);
 
 	dTempdv = 80 / (v110 - v30);
 }
