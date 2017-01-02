@@ -72,7 +72,6 @@ void CPU_busy_int()
 	TIM2->CR1 &= ~TIM_CR1_CEN;
 }
 
-#include "stdio.h"
 #include "serial.h"
 
 void CPU_Usage_Update()
@@ -91,10 +90,6 @@ void CPU_Usage_Update()
 		uint8_t usage = 100 - free;
 
 		status.system.cpu_usage = usage;
-
-		char buf[50];
-		//sprintf(buf, "%u %u\r\n", cnt, usage);
-		//Serial_SendStr(buf);
 
 		i = 0;
 	}
