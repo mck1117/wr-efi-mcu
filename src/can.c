@@ -49,7 +49,7 @@ void can_frame_system(can_frame_t* f)
 	f->id = CAN_ID_SYSTEM;
 
 	f->data8[0] = status.system.cpu_usage;
-	f->data8[1] = 0;
+	f->data8[1] = ftou8(status.system.cpu_temp + 40, 1);
 	f->data16[1] = ftou16(status.input.batt, 100);
 	f->data32[1] = cnt++;	// monotonic counter
 }

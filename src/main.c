@@ -69,6 +69,8 @@ void Events_1khz()
 	 */
 
 	system_timer++;
+	// Update the temperature sensor
+	ADC_UpdateTempSensor();
 
 	CAN_Transmits();
 

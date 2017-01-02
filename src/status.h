@@ -50,6 +50,7 @@ typedef struct status_flags_s {
 
 typedef struct status_system_s {
 	uint8_t cpu_usage;
+	float cpu_temp;
 } status_system_t;
 
 typedef struct status_s {

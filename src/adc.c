@@ -9,8 +9,8 @@
 
 #include "adc.h"
 
-// Stores the samples from channels 1, 2, 3, 4, 5, 6, 8, 9 (1khz)
-volatile uint16_t regular_channels_sample[8];
+// Stores the samples from channels 1, 2, 3, 4, 5, 6, 8, 9, temp (16) (1khz)
+volatile uint16_t regular_channels_sample[9];
 
 volatile uint16_t map_average;
 
@@ -38,8 +38,8 @@ static inline void Init_ADC_ADC()
 
 
 
-	// Turn on ADC
-	ADC1->CR2 |= ADC_CR2_ADON;
+	// Turn on ADC and temp sensor
+	ADC1->CR2 |= ADC_CR2_ADON | ADC_CR2_TSVREFE;
 
 	// Reset cal
 	ADC1->CR2 |= ADC_CR2_RSTCAL;
@@ -52,14 +52,14 @@ static inline void Init_ADC_ADC()
 	while(ADC1->CR2 & ADC_CR2_CAL);
 
 
-	// Sample time = 13.5 cycle
-	ADC1->SMPR1 = 0;
+	// Sample time = 13.5 cycle, except for temp sensor which is 239.5
+	ADC1->SMPR1 = (7 << 18);
 	ADC1->SMPR2 = (3 << 27) | (3 << 24) | (3 << 21) | (3 << 18) | (3 << 15)
 			| (3 << 12) | (3 << 9) | (3 << 6) | (3 << 3) | (3 << 0);
 
 	// Set up regular sequence
-	ADC1->SQR1 = (7 << 20);				// 8 channels in reg. seq.
-	ADC1->SQR2 = (9 << 5) | (8 << 0);	// 8th: ch9, 7th: ch8
+	ADC1->SQR1 = (8 << 20);				// 9 channels in reg. seq.
+	ADC1->SQR2 = (16 << 10) | (9 << 5) | (8 << 0);	// 9th: temp sensor (ch16), 8th: ch9, 7th: ch8
 	ADC1->SQR3 = (6 << 25) | (5 << 20) | (4 << 15) | (3 << 10) | (2 << 5)
 			| (1 << 0); 	// Ch 6, 5, 4, 3, 2, 1
 
@@ -79,8 +79,8 @@ static inline void Init_ADC_DMA()
 			DMA_CCR_MINC |		// Memory increment mode
 			DMA_CCR_CIRC;		// Circular
 
-	// 8 transfers
-	DMA1_Channel1->CNDTR = 8;
+	// 9 transfers, 7 channels + battery voltage + internal temp
+	DMA1_Channel1->CNDTR = 9;
 	// DMA src = ADC 1 data reg
 	DMA1_Channel1->CPAR = (uint32_t)(&ADC1->DR);
 	// Write to the sample array
@@ -88,8 +88,9 @@ static inline void Init_ADC_DMA()
 
 	// Enable DMA channel
 	DMA1_Channel1->CCR |= DMA_CCR_EN;
-
 }
+
+void Init_ADC_TempSensor();
 
 void Init_ADC()
 {
@@ -97,6 +98,7 @@ void Init_ADC()
 
 	 General purpose inputs are on ADC1 ch 1, 2, 3, 4, 5, 6, and 8.
 	 Battery voltage is on ADC1 ch 9.
+	 Temp sensor is on ADC1 ch 16.
 
 	 These are sampled at 1khz
 
@@ -111,6 +113,8 @@ void Init_ADC()
 	Init_ADC_GPIO();
 
 	Init_ADC_ADC();
+
+	Init_ADC_TempSensor();
 
 	Init_ADC_DMA();
 
@@ -127,6 +131,52 @@ void ADC_UpdateMapAverage()
 
 	map_accumulator = 0;
 	map_sample_count = 0;
+}
+
+static float v30 = 0;
+static float dTempdv = 0;
+
+static float adc_count_to_volts(uint16_t counts)
+{
+	return counts / 1240.909f; // = counts * 3.3 / 4095
+}
+
+void Init_ADC_TempSensor()
+{
+	// Read factory temp measurements
+	// Taken at 30 and 110, plus or minus 5 deg c
+	uint16_t val_30 = *((uint16_t*)0x1FFFF7B8);
+	uint16_t val_110 = *((uint16_t*)0x1FFFF7C2);
+
+	v30 = adc_count_to_volts(val_30);
+	float v110 = adc_count_to_volts(val_110);
+
+	dTempdv = 80 / (v110 - v30);
+}
+
+#include "status.h"
+
+static int hasTempAvg = 0;
+
+void ADC_UpdateTempSensor()
+{
+	uint16_t temp_count = regular_channels_sample[8];
+	float volts = temp_count / 1240.909f;
+
+	float dv = volts - v30;
+	float delta = dv * dTempdv;
+
+    float temperatureSample = delta + 30;
+
+    if(hasTempAvg)
+    {
+    	status.system.cpu_temp = 0.001f * temperatureSample + 0.999f * status.system.cpu_temp;
+    }
+    else
+    {
+    	status.system.cpu_temp = temperatureSample;
+    	hasTempAvg = 1;
+    }
 }
 
 #include "status.h"
