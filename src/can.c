@@ -191,7 +191,7 @@ static void CAN_FillMailboxes()
 		// Fill the mailbox data
 		CAN1->sTxMailBox[mailbox].TDHR = f->data32[1];
 		CAN1->sTxMailBox[mailbox].TDLR = f->data32[0];
-		CAN1->sTxMailBox[mailbox].TIR = f->id<< 21;
+		CAN1->sTxMailBox[mailbox].TIR = f->id << 21;
 		CAN1->sTxMailBox[mailbox].TDTR = 8;
 
 		// Fire the transmission
