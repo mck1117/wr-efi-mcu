@@ -27,6 +27,7 @@ void can_frame_rpm_map(can_frame_t* f)
 	// Round RPM to nearest (not truncate)
 	f->data16[0] = ftou16(status.input.rpm, 1);
 	//f->data16[1] = (uint16_t)status.flags;
+	f->data16[1] = 0;
 	f->data16[2] = ftou16(status.input.map, 10);
 	f->data16[3] = ftoi16(status.input.tps, 10);
 }
@@ -73,6 +74,8 @@ void can_frame_calcs_ign(can_frame_t* f)
 
 	f->data16[0] = ftoi16(status.output.ign_timing, 10);
 	f->data16[1] = ftoi16(status.output.ign_dwell, 1000000);	// output integer microseconds
+	f->data16[2] = 0;
+	f->data16[3] = 0;
 }
 
 void Init_CAN()
