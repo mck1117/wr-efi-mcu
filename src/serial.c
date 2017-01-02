@@ -83,3 +83,59 @@ void Serial_SendStr(const char* str)
 
 	Serial_Send((uint8_t*)str, len);
 }
+
+char nibtoa(uint8_t nibble)
+{
+	if(nibble >= 0xA)
+	{
+		return nibble - 0xA + 'a';
+	}
+	else
+	{
+		return nibble + '0';
+	}
+}
+
+void u8toa(uint8_t value, char* str)
+{
+	uint8_t hi = value >> 4;
+	uint8_t lo = value & 0x0F;
+
+	*str = nibtoa(hi);
+	*(str + 1) = nibtoa(lo);
+}
+
+void u16toa(uint16_t value, char* str)
+{
+	uint8_t hi = value >> 8;
+	uint8_t lo = value & 0xFF;
+
+	// A uint16 is just two uint8s
+	u8toa(hi, str);
+	u8toa(lo, str + 2);
+}
+
+#include "can.h"
+
+void Serial_SendCAN(can_frame_t frame)
+{
+	char buf[31];
+
+	u16toa(frame.id, buf);
+
+	*(buf + 4) = ':';
+
+	for(int i = 0; i < 8; i++)
+	{
+		int idx_base = i * 3 + 5;
+
+		*(buf + idx_base) = ' ';
+
+		u8toa(frame.data8[i], buf + idx_base + 1);
+	}
+
+	*(buf + 29) = '\r';
+	*(buf + 30) = '\n';
+
+	Serial_Send(buf, 31);
+}
