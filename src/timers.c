@@ -39,8 +39,6 @@ void Start_Timers()
 	// Start timers
 	TIM19->CR1 |= TIM_CR1_CEN;
 	TIM4->CR1 |= TIM_CR1_CEN;
-
-	CPU_idle_int();
 }
 
 #include "status.h"
