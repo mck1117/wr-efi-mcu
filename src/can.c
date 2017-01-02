@@ -145,9 +145,13 @@ void CAN1_RX0_IRQHandler()
 	CPU_idle_int();
 }
 
+#define UNUSED(x) (void)(x)
+
 // Recieves one can frame, either from real CAN, or CAN-over-USART
 void CAN_RecieveFrame(can_frame_t frame)
 {
+	UNUSED(frame);
+
 	// Echo frame over serial
 	//Serial_SendCAN(frame);
 }
