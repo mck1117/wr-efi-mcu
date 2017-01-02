@@ -53,7 +53,7 @@ void Init_Serial()
 	Init_Serial_DMA();
 
 	// Enable USART3 interrupts
-	NVIC_EnableIRQ(USART3_IRQn);
+	//NVIC_EnableIRQ(USART3_IRQn);
 
 	// Lastly, enable USART3
 	USART3->CR1 |= USART_CR1_UE;
@@ -119,7 +119,7 @@ void u16toa(uint16_t value, char* str)
 
 void Serial_SendCAN(can_frame_t frame)
 {
-	char buf[31];
+	char buf[23];
 
 	u16toa(frame.id, buf);
 
@@ -127,15 +127,13 @@ void Serial_SendCAN(can_frame_t frame)
 
 	for(int i = 0; i < 8; i++)
 	{
-		int idx_base = i * 3 + 5;
-
-		*(buf + idx_base) = ' ';
+		int idx_base = i * 2 + 5;
 
 		u8toa(frame.data8[i], buf + idx_base + 1);
 	}
 
-	*(buf + 29) = '\r';
-	*(buf + 30) = '\n';
+	*(buf + 21) = '\r';
+	*(buf + 22) = '\n';
 
-	Serial_Send(buf, 31);
+	Serial_Send((uint8_t*)buf, 23);
 }
