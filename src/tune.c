@@ -10,7 +10,46 @@ extern void* _tuneloc;
 void Load_Tune()
 {
 	// Copy tune from flash
-	memcpy(&tune, _tuneloc, sizeof(tune_t));
+	//memcpy(&tune, _tuneloc, sizeof(tune_t));
+
+
+	tune.afr_stoich = 147;
+
+	// Cranking settings
+	tune.cranking_advance = 60;				// 6 deg btdc
+	tune.cranking_dwell = 6000;				// 6 ms dwell
+
+	tune.engine.base_fuel = 8600;			// 8.6 ms base fuel
+	tune.engine.cranking_threshold = 300;	// 300 RPM crank threshold
+
+	// Flat/inline/even-v 6 cylinder phasing
+	tune.engine.cyl_phase[0] = 0;
+	tune.engine.cyl_phase[1] = 2560;
+	tune.engine.cyl_phase[2] = 5120;
+	tune.engine.cyl_phase[3] = 0;	// only 3 outputs, no 4th
+
+	tune.engine.tooth_count = 60;	// 60-2 toothed wheel
+	tune.engine.teeth_missing = 2;
+
+	tune.engine.tooth_width = 128;		// 128 quanta per normal tooth
+	tune.engine.quanta_per_rev = 7680;	// gives 7680 quanta per revolution
+
+	for(int i = 0; i < 16; i++)
+	{
+		for(int j = 0; j < 16; j++)
+		{
+			tune.fuel.values[i + j * 16] = 100;	// 100% VE
+			tune.ign.values[i + j * 16] = 150;	// 15 deg timing
+			tune.afr_target.values[i + j * 16] = 130;	// 13.0 AFR target
+		}
+
+		tune.injector_deadtime.values[i] = 950;
+		tune.cranking.values[i] = 138;
+
+		// test values for corrections
+		tune.clt.values[i] = 127;
+		tune.iat.values[i] = 97;
+	}
 }
 
 void Save_Tune()
