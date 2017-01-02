@@ -15,7 +15,6 @@
 
 //#include <stdio.h>
 
-volatile uint32_t system_timer = 0;
 volatile int init_completed = 0;
 
 int main(void)
@@ -68,7 +67,6 @@ void Events_1khz()
 	 *
 	 */
 
-	system_timer++;
 	// Update the temperature sensor
 	ADC_UpdateTempSensor();
 

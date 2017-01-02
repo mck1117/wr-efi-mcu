@@ -43,11 +43,15 @@ void Start_Timers()
 
 #include "status.h"
 
+volatile uint32_t system_timer = 0;
+
 void TIM19_IRQHandler()
 {
 	CPU_busy_int();
 
 	CPU_Usage_Update();
+
+	system_timer++;
 
 	if(TIM19->SR | TIM_SR_UIF)
 	{

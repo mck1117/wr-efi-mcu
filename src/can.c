@@ -4,6 +4,7 @@
 #include "stm32f37x.h"
 
 #include "status.h"
+#include "timers.h"
 
 uint16_t ftou16(float f, float scale)
 {
@@ -42,8 +43,6 @@ void can_frame_sens(can_frame_t* f)
 	f->data16[3] = ftou16(status.input.afr2, 100);
 }
 
-static uint32_t cnt = 0;
-
 void can_frame_system(can_frame_t* f)
 {
 	f->id = CAN_ID_SYSTEM;
@@ -51,7 +50,7 @@ void can_frame_system(can_frame_t* f)
 	f->data8[0] = status.system.cpu_usage;
 	f->data8[1] = ftou8(status.system.cpu_temp + 40, 1);
 	f->data16[1] = ftou16(status.input.batt, 100);
-	f->data32[1] = cnt++;	// monotonic counter
+	f->data32[1] = system_timer;	// runtime in milliseconds
 }
 
 void can_frame_calcs_fuel(can_frame_t* f)
