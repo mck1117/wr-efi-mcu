@@ -147,12 +147,15 @@ void CAN1_RX0_IRQHandler()
 	CPU_idle_int();
 }
 
-#define UNUSED(x) (void)(x)
+#include "can_tuning.h"
 
 // Recieves one can frame, either from real CAN, or CAN-over-USART
 void CAN_RecieveFrame(can_frame_t frame)
 {
-	UNUSED(frame);
+	if(frame.id == 0x100)
+	{
+		CAN_Tuning_ProcessFrame(frame);
+	}
 
 	// Echo frame over serial
 	//Serial_SendCAN(frame);
