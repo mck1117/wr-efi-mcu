@@ -76,8 +76,6 @@ void Events_1khz()
 	{
 		FPGA_Read();
 
-		status.flags.synced = 0;
-
 		// If we aren't synced, manually update the MAP averaging
 		// (while synced this happens in the per-cyl interrupt)
 		if(!status.flags.synced)
