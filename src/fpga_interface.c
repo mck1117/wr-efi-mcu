@@ -156,17 +156,23 @@ void FPGA_SetTriggerOffset()
 		raw_phases[1] = qt_half;
 
 		enable_mask = 0x03;
+
+		break;
 	case 6:
 		raw_phases[1] = qt_third;
 		raw_phases[2] = 2 * qt_third;
 
 		enable_mask = 0x07;
+
+		break;
 	case 8:
 		raw_phases[1] = qt_quarter;
 		raw_phases[2] = 2 * qt_quarter;
 		raw_phases[3] = 3 * qt_quarter;
 
 		enable_mask = 0x0F;
+
+		break;
 	default:
 		while(1);	// hang
 	}
