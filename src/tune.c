@@ -24,15 +24,15 @@ void Load_Tune()
 
 	// Flat/inline/even-v 6 cylinder phasing
 	tune.engine.cyl_phase[0] = 0;
-	tune.engine.cyl_phase[1] = 2560;
-	tune.engine.cyl_phase[2] = 5120;
+	tune.engine.cyl_phase[1] = 5120;
+	tune.engine.cyl_phase[2] = 10240;
 	tune.engine.cyl_phase[3] = 0;	// only 3 outputs, no 4th
 
 	tune.engine.tooth_count = 60;	// 60-2 toothed wheel
 	tune.engine.teeth_missing = 2;
 
-	tune.engine.tooth_width = 128;		// 128 quanta per normal tooth
-	tune.engine.quanta_per_rev = 7680;	// gives 7680 quanta per revolution
+	tune.engine.tooth_width = 256;		// 128 quanta per normal tooth
+	tune.engine.quanta_per_rev = 256*60;	// gives 7680 quanta per revolution
 
 	for(int i = 0; i < 16; i++)
 	{

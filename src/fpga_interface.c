@@ -120,14 +120,12 @@ void Init_FPGA_GPIO()
 void Init_FPGA_Config_Timing()
 {
 	FPGA_WriteReg(FPGA_REG_TOOTH_COUNT, tune.engine.tooth_count);
-	FPGA_WriteReg(FPGA_REG_TOOTH_WIDTH, tune.engine.tooth_width);
 	FPGA_WriteReg(FPGA_REG_TEETH_MISSING, tune.engine.teeth_missing);
-	FPGA_WriteReg(FPGA_REG_QUANTA_PER_REV, tune.engine.quanta_per_rev);
 
 	// Write 4 spark output phases
 	for(int i = 0; i < 4; i++)
 	{
-		FPGA_WriteReg(FPGA_REG_CYL_PHASE + i, tune.engine.cyl_phase[i]);
+		FPGA_WriteReg(FPGA_REG_CYL_PHASE_BASE + i, tune.engine.cyl_phase[i]);
 	}
 }
 
@@ -141,8 +139,10 @@ void Init_FPGA()
 
 void FPGA_Read()
 {
-	status.input.rpm = 1234;
-	status.flags.synced = 1;
+	status.input.rpm = FPGA_ReadReg(FPGA_REG_RPM);
+	uint8_t fpga_status = FPGA_ReadReg(FPGA_REG_STATUS);
+
+	status.flags.synced = (fpga_status & 0x01) == 1;
 }
 
 void FPGA_WriteRun()
