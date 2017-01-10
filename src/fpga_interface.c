@@ -180,7 +180,7 @@ void FPGA_SetTriggerOffset()
 	enable_mask |= 0x30;
 
 	// Convert from degrees to time quanta
-	float offset_frac = tune.engine.trigger_offset / 360.0f;
+	float offset_frac = tune.engine.trigger_offset / 3600.0f;
 	uint16_t trig_offset_qt = offset_frac * Tune_QuantaPerRev();
 
 	// Set the phase for each cylinder
