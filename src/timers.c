@@ -30,7 +30,7 @@ void Init_Timers()
 	TIM19->PSC = 15;
 	TIM19->ARR = 3999;	// period is 4000
 
-	// Enable tim4 interrupts
+	// Enable tim19 interrupts
 	NVIC_EnableIRQ(TIM19_IRQn);
 }
 
