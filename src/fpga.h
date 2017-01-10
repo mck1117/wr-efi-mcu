@@ -8,7 +8,7 @@ void FPGA_Read();
 void FPGA_WriteRun();
 
 
-
+#define FPGA_REG_ENABLES	0x00
 #define FPGA_REG_TOOTH_COUNT 0x01
 #define FPGA_REG_TEETH_MISSING 0x02
 

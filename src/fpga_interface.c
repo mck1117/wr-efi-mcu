@@ -170,4 +170,14 @@ void FPGA_WriteRun()
 
 	FPGA_WriteReg(FPGA_REG_INJ_PW1, inj_pw);
 	FPGA_WriteReg(FPGA_REG_INJ_PW2, 0);
+
+	// If we're synced, enable everything
+	if(status.flags.synced)
+	{
+		FPGA_WriteReg(FPGA_REG_ENABLES, 0x37);
+	}
+	else
+	{
+		FPGA_WriteReg(FPGA_REG_ENABLES, 0x00);
+	}
 }
