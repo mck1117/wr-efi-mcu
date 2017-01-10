@@ -23,16 +23,11 @@ void Load_Tune()
 	tune.engine.cranking_threshold = 300;	// 300 RPM crank threshold
 
 	// Flat/inline/even-v 6 cylinder phasing
-	tune.engine.cyl_phase[0] = 0;
-	tune.engine.cyl_phase[1] = 5120;
-	tune.engine.cyl_phase[2] = 10240;
-	tune.engine.cyl_phase[3] = 0;	// only 3 outputs, no 4th
+	tune.engine.cylinder_count = 6;
+	tune.engine.trigger_offset = 850;
 
 	tune.engine.tooth_count = 60;	// 60-2 toothed wheel
 	tune.engine.teeth_missing = 2;
-
-	tune.engine.tooth_width = 256;		// 128 quanta per normal tooth
-	tune.engine.quanta_per_rev = 256*60;	// gives 7680 quanta per revolution
 
 	for(int i = 0; i < 16; i++)
 	{
@@ -57,6 +52,11 @@ void Load_Tune()
 void Save_Tune()
 {
 	// TODO: implement flash writing
+}
+
+__attribute__((always_inline)) inline uint16_t Tune_QuantaPerRev()
+{
+	return tune.engine.tooth_count * 256;
 }
 
 static uint8_t find_index(int16_t* axis, float value, uint8_t axis_size)

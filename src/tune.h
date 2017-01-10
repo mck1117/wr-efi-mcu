@@ -49,31 +49,22 @@ typedef struct tune_engine_s {
 	// RPM above which we switch from crank -> run
 	uint16_t cranking_threshold;
 
-
-
 	// Trigger settings
 	// Number of teeth on the wheel
 	uint16_t tooth_count;
 
-	// Width of a tooth, in time quanta
-	uint16_t tooth_width;
-
 	// Number of teeth missing (long tooth width)
 	uint16_t teeth_missing;
 
-	// FPGA time quanta per revolution
-	// 1 quantum should be small, << 1/10 degree
-	uint16_t quanta_per_rev;
+	// Cylinder count, individual cylinder phases are computed later
+	uint8_t cylinder_count;
 
-	// Relative cylinder phasing
-	// Ex: inline/flat 6, wasted spark:
-	// phase A = 0   deg
-	// phase B = 120 deg
-	// phase C = 240 deg
-	// phase D = 0   deg (unused)
-	uint16_t cyl_phase[4];
-
+	// Distance between missing tooth and the #1 spark output, in tenths of a degree
+	// ie if the missing tooth happens 65.3 degrees before #1 TDC, then set this to 653
+	int16_t trigger_offset;
 } tune_engine_t;
+
+uint16_t Tune_QuantaPerRev();
 
 typedef struct tune_s {
 	// Version goes at the beginning, never moves

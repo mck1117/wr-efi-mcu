@@ -117,16 +117,83 @@ void Init_FPGA_GPIO()
 	GPIOD->AFR[1] |= 0x00000005;	// SPI2 is af5 (sck)
 }
 
+uint16_t calc_total_cyl_phase(uint16_t trigger_offset, uint16_t cyl_phase)
+{
+	uint16_t sum = trigger_offset + cyl_phase;
+
+	uint16_t qpr = Tune_QuantaPerRev();
+
+	while(sum > qpr)
+	{
+		sum -= qpr;
+	}
+
+	return sum;
+}
+
+static uint8_t enable_mask = 0x00;
+
+void FPGA_SetTriggerOffset()
+{
+	// Relative cylinder phasing
+	// Ex: inline/flat 6, wasted spark:
+	// phase A = 0   deg
+	// phase B = 120 deg
+	// phase C = 240 deg
+	// phase D = 0   deg (unused)
+
+	uint16_t raw_phases[] = { 0, 0, 0, 0 };
+
+	uint16_t qt_rev = Tune_QuantaPerRev();
+	uint16_t qt_half = qt_rev / 2;
+	uint16_t qt_third = qt_rev / 3;
+	uint16_t qt_quarter = qt_rev / 4;
+
+	switch(tune.engine.cylinder_count)
+	{
+	case 4:
+		raw_phases[0] = 0;
+		raw_phases[1] = qt_half;
+
+		enable_mask = 0x03;
+	case 6:
+		raw_phases[1] = qt_third;
+		raw_phases[2] = 2 * qt_third;
+
+		enable_mask = 0x07;
+	case 8:
+		raw_phases[1] = qt_quarter;
+		raw_phases[2] = 2 * qt_quarter;
+		raw_phases[3] = 3 * qt_quarter;
+
+		enable_mask = 0x0F;
+	default:
+		while(1);	// hang
+	}
+
+	enable_mask |= 0x30;
+
+	// Convert from degrees to time quanta
+	float offset_frac = tune.engine.trigger_offset / 360.0f;
+	uint16_t trig_offset_qt = offset_frac * Tune_QuantaPerRev();
+
+	// Set the phase for each cylinder
+	// This is just the cylinder's relative phase to #1, plus the offset from the missing tooth to #1 cyl
+	for(int i = 0; i < 4; i++)
+	{
+		uint16_t total_phase = calc_total_cyl_phase(trig_offset_qt, raw_phases[i]);
+
+		FPGA_WriteReg(FPGA_REG_CYL_PHASE_BASE + i, total_phase);
+	}
+}
+
 void Init_FPGA_Config_Timing()
 {
 	FPGA_WriteReg(FPGA_REG_TOOTH_COUNT, tune.engine.tooth_count);
 	FPGA_WriteReg(FPGA_REG_TEETH_MISSING, tune.engine.teeth_missing);
 
-	// Write 4 spark output phases
-	for(int i = 0; i < 4; i++)
-	{
-		FPGA_WriteReg(FPGA_REG_CYL_PHASE_BASE + i, tune.engine.cyl_phase[i]);
-	}
+	// Write spark output phases
+	FPGA_SetTriggerOffset();
 }
 
 void Init_FPGA()
@@ -157,10 +224,10 @@ void FPGA_WriteRun()
 	while(timing_actual < 0) timing_actual += 360;
 
 	// Convert from engine degrees to engine sync quanta
-	uint16_t timing_quanta = (uint16_t)(tune.engine.quanta_per_rev * (timing_actual / 360));
+	uint16_t timing_quanta = (uint16_t)(Tune_QuantaPerRev() * (timing_actual / 360));
 
 	// Convert from dwell period (seconds) to sync quanta
-	uint16_t dwell_quanta = (uint16_t)(status.output.ign_dwell / status.computations.period * tune.engine.quanta_per_rev);
+	uint16_t dwell_quanta = (uint16_t)(status.output.ign_dwell / status.computations.period * Tune_QuantaPerRev());
 
 	// Convert from pulse width period (seconds) to microseconds
 	uint16_t inj_pw = (uint16_t)(status.output.injector_pw * 1000000);
@@ -174,7 +241,7 @@ void FPGA_WriteRun()
 	// If we're synced, enable everything
 	if(status.flags.synced)
 	{
-		FPGA_WriteReg(FPGA_REG_ENABLES, 0x37);
+		FPGA_WriteReg(FPGA_REG_ENABLES, enable_mask);
 	}
 	else
 	{
