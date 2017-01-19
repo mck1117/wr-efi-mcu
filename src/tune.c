@@ -23,11 +23,11 @@ void Load_Tune()
 	tune.engine.cranking_threshold = 300;	// 300 RPM crank threshold
 
 	// Flat/inline/even-v 6 cylinder phasing
-	tune.engine.cylinder_count = 6;
+	tune.engine.cylinder_count = 4;
 	tune.engine.trigger_offset = 850;
 
-	tune.engine.tooth_count = 60;	// 60-2 toothed wheel
-	tune.engine.teeth_missing = 2;
+	tune.engine.tooth_count = 24;	// 60-2 toothed wheel
+	tune.engine.teeth_missing = 1;
 
 	for(int i = 0; i < 16; i++)
 	{
