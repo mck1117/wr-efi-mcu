@@ -5,6 +5,7 @@
 
 #include "status.h"
 #include "timers.h"
+#include "serial.h"
 
 uint16_t ftou16(float f, float scale)
 {
@@ -152,13 +153,13 @@ void CAN1_RX0_IRQHandler()
 // Recieves one can frame, either from real CAN, or CAN-over-USART
 void CAN_RecieveFrame(can_frame_t frame)
 {
-	if(frame.id == 0x100)
+	/*if(frame.id == 0x100)
 	{
 		CAN_Tuning_ProcessFrame(frame);
-	}
+	}*/
 
 	// Echo frame over serial
-	//Serial_SendCAN(frame);
+	Serial_SendCAN(frame);
 }
 
 

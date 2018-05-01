@@ -5,10 +5,11 @@
 
 void Init_Serial();
 
-
+#include "can.h"
 
 void Serial_Send(const uint8_t* data, uint16_t length);
 void Serial_SendStr(const char* str);
+void Serial_SendCAN(can_frame_t frame);
 
 
 

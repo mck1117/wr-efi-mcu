@@ -19,25 +19,27 @@ volatile int init_completed = 0;
 
 int main(void)
 {
-	Load_Tune();
+	//Load_Tune();
 
 	Init_CPUUsage();
 	Init_Serial();
-	Init_Timers();
-	Init_ADC();
+	//Init_Timers();
+	//Init_ADC();
 
 	Init_CAN();
 
-	Start_Timers();
+	//Start_Timers();
 
 	// Wait for FPGA to program
-	while(system_timer < 1000) ;
+	//while(system_timer < 1000) ;
 
 	// Now we can init the FPGA
-	Init_FPGA();
+	//Init_FPGA();
 
 	// Load tune in to RAM from FLASH
 	//Load_Tune();
+
+	Serial_SendStr("Hello, world!");
 
 	init_completed = 1;
 

@@ -7,6 +7,7 @@
 
 #include "can_tuning.h"
 
-void CAN_Tuning_ProcessFrame(can_frame_t f)
+/*void CAN_Tuning_ProcessFrame(can_frame_t f)
 {
-}
+	UNUSED(f);
+}*/
