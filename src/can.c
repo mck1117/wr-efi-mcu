@@ -34,9 +34,9 @@ void Init_CAN()
 	// Wait for init mode
 	while ((CAN1->MSR & CAN_MSR_INAK) == 0);
 
-	CAN1->BTR = (1 << 24) |	// SJW = 1
+	CAN1->BTR = (0 << 24) |	// SJW = 1
 				(1 << 20) | // TS2 = 2
-				(4 << 16) |	// TS1 = 5
+				(12 << 16) |	// TS1 = 13
 				(3 << 0);   // BRP = 1/4
 
 	CAN1->MCR |= CAN_MCR_NART;
